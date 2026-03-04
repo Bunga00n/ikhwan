@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Luahan Hati</title>
 
-<!-- Tailwind CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Google Font (Matang Serif) -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -17,7 +15,7 @@ body {
 }
 .fade {
     opacity: 0;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 0.8s ease-in-out;
 }
 .fade.show {
     opacity: 1;
@@ -27,16 +25,16 @@ body {
 
 <body class="bg-neutral-950 text-neutral-200 min-h-screen flex items-center justify-center px-6">
 
-<div id="app" class="max-w-2xl text-center space-y-8 fade show">
+<div class="max-w-2xl text-center space-y-10 fade show">
 
-    <!-- Muka Depan -->
+    <!-- INTRO PAGE -->
     <div id="intro">
-        <h1 class="text-3xl md:text-4xl font-semibold leading-relaxed">
+        <h1 class="text-3xl md:text-4xl leading-relaxed font-semibold">
             Teruntuk awak,<br>
             sudikah awak membaca luahan saya?
         </h1>
 
-        <div class="flex justify-center gap-6 mt-8">
+        <div class="flex justify-center gap-6 mt-10">
             <button onclick="startReading()" 
                 class="px-6 py-2 border border-neutral-400 hover:bg-neutral-800 transition duration-500">
                 Yes
@@ -49,9 +47,9 @@ body {
         </div>
     </div>
 
-    <!-- Kandungan -->
+    <!-- CONTENT PAGE -->
     <div id="content" class="hidden space-y-8">
-        <p id="paragraphText" class="text-xl leading-loose"></p>
+        <p id="paragraphText" class="text-xl leading-loose fade"></p>
 
         <div class="flex justify-center gap-6">
             <button onclick="nextParagraph()" 
@@ -70,13 +68,14 @@ body {
 
 <script>
 const paragraphs = [
-`Honestly, at first when I left... (MASUKKAN TEKS PENUH PERENGGAN 1 DI SINI)`,
 
-`The moments I said I accept your decision... (MASUKKAN TEKS PENUH PERENGGAN 2 DI SINI)`,
+`Honestly, at first when I left from your house two weeks ago, I thought I could slowly let everything that happened go. Saya fikir saya boleh ikhlaskan semuanya dengan masa. Tapi ternyata saya salah. I suffered for these two weeks. The more time passed, the heavier it felt. The silence became louder than anything.`,
 
-`Dari semasa ke semasa saya cuba lupakan awak... (MASUKKAN TEKS PENUH PERENGGAN 3 DI SINI)`,
+`The moment I said I accept your decision was because you said you could be happier without me. So I thought the best thing I could do was let you find that happiness — even if it meant sacrificing my own. I chose to step back, walaupun hati saya tak pernah benar-benar bersedia.`,
 
-`Banyak lagi saya nak luah... last soalan, awak taknak berbaik dengan saya ke?`
+`Dari semasa ke semasa saya cuba lupakan awak. Saya sibukkan diri, pura-pura nampak kuat di depan orang. Tapi bila saya sendiri, saya tewas. Saya cari awak, saya stalk awak, saya bersedih dalam diam sampai kadang-kadang rasa hilang diri. Saya kalah dengan keadaan, dan mungkin juga kalah dengan perasaan sendiri.`,
+
+`Banyak lagi sebenarnya yang saya nak luahkan, tapi saya tak lagi sekuat itu. Jadi ini saja yang saya mampu tanya... awak taknak berbaik dengan saya ke?`
 ];
 
 let currentIndex = 0;
@@ -90,12 +89,11 @@ function startReading() {
 function showParagraph() {
     const textElement = document.getElementById("paragraphText");
     textElement.classList.remove("show");
-    textElement.classList.add("fade");
 
     setTimeout(() => {
         textElement.innerText = paragraphs[currentIndex];
         textElement.classList.add("show");
-    }, 300);
+    }, 200);
 }
 
 function nextParagraph() {
@@ -103,27 +101,34 @@ function nextParagraph() {
         currentIndex++;
         showParagraph();
     } else {
-        alert("Itu sahaja yang mampu saya luahkan hari ini.");
+        alert("Terima kasih sebab membaca sampai akhir.");
     }
 }
 
 function stopReading() {
-    alert("Kalau awak berhenti di sini, saya tetap berterima kasih sebab sudi membaca sampai tahap ini.");
+    alert("Kalau awak berhenti di sini, saya faham. Mungkin belum masanya untuk awak dengar semuanya. Terima kasih sebab sudi sampai tahap ini.");
+    endSession();
 }
 
 function declineReading() {
-    alert("Tak apa... mungkin belum masanya untuk awak membaca semua ini.");
+    alert("Tak apa… mungkin belum masanya untuk awak membaca semua ini. Saya tetap doakan awak bahagia.");
 
-    // Hantar notifikasi ke Formspree
-    fetch("https://formspree.io/f/YOUR_FORMSPREE_ENDPOINT", {
+    fetch("https://formspree.io/f/YOUR_ENDPOINT", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            message: "Dia tekan NO dan tidak membaca luahan."
+            message: "Dia pilih NO dan tidak membaca luahan."
         })
     });
+
+    endSession();
+}
+
+function endSession() {
+    document.getElementById("content").innerHTML = 
+    `<p class="text-lg text-neutral-400">Luahan ini berakhir di sini.</p>`;
 }
 </script>
 
