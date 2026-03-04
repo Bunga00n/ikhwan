@@ -6,31 +6,42 @@
 <title>Luahan Hati</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 body {
     font-family: 'Cormorant Garamond', serif;
+    transition: background-color 2s ease;
 }
-.fade {
+.cursor {
+    display: inline-block;
+    width: 8px;
+    background-color: #d4d4d4;
+    animation: blink 1s infinite;
+    margin-left: 3px;
+}
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+.fade-in {
     opacity: 0;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 1.5s ease;
 }
-.fade.show {
+.fade-in.show {
     opacity: 1;
 }
 </style>
 </head>
 
-<body class="bg-neutral-950 text-neutral-200 min-h-screen flex items-center justify-center px-6">
+<body class="bg-neutral-900 text-neutral-200 min-h-screen flex items-center justify-center px-6">
 
-<!-- Background Music -->
-<audio id="bgMusic" autoplay loop>
+<audio id="bgMusic" loop>
     <source src="YOUR_INSTRUMENTAL_LINK.mp3" type="audio/mpeg">
 </audio>
 
-<div class="max-w-2xl text-center space-y-10 fade show">
+<div class="max-w-2xl text-center space-y-10">
 
     <!-- INTRO -->
     <div id="intro">
@@ -56,7 +67,7 @@ body {
     <div id="content" class="hidden space-y-8">
         <p id="paragraphText" class="text-xl leading-loose whitespace-pre-line"></p>
 
-        <div class="flex justify-center gap-6">
+        <div id="buttons" class="flex justify-center gap-6 opacity-0 transition-opacity duration-1000">
             <button onclick="nextParagraph()" 
                 class="px-6 py-2 border border-neutral-500 hover:bg-neutral-800 transition duration-500">
                 Next
@@ -125,24 +136,35 @@ Atau sebenarnya… awak cuma dah tak rasa apa-apa?`
 ];
 
 let currentIndex = 0;
-let typingSpeed = 35; // Lagi kecil = lagi perlahan & menyayat
 
 function startReading() {
     document.getElementById("intro").classList.add("hidden");
     document.getElementById("content").classList.remove("hidden");
+    document.getElementById("bgMusic").play();
+    darkenBackground();
     typeWriter(paragraphs[currentIndex]);
 }
 
 function typeWriter(text) {
     let i = 0;
     const element = document.getElementById("paragraphText");
+    const buttons = document.getElementById("buttons");
     element.innerHTML = "";
-    
+    buttons.style.opacity = 0;
+
     function typing() {
         if (i < text.length) {
-            element.innerHTML += text.charAt(i);
+            element.innerHTML = text.substring(0, i + 1) + '<span class="cursor"></span>';
+            let speed = 35;
+
+            if (text.charAt(i) === '.' || text.charAt(i) === ',') speed = 200;
+            if (text.charAt(i) === '\n') speed = 300;
+
             i++;
-            setTimeout(typing, typingSpeed);
+            setTimeout(typing, speed);
+        } else {
+            element.innerHTML = text;
+            buttons.style.opacity = 1;
         }
     }
     typing();
@@ -151,6 +173,7 @@ function typeWriter(text) {
 function nextParagraph() {
     if (currentIndex < paragraphs.length - 1) {
         currentIndex++;
+        darkenBackground();
         typeWriter(paragraphs[currentIndex]);
     } else {
         alert("Terima kasih sebab membaca sampai akhir.");
@@ -167,20 +190,21 @@ function declineReading() {
 
     fetch("https://formspree.io/f/YOUR_FORMSPREE_ENDPOINT", {
         method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            message: "Dia pilih NO dan tidak membaca luahan."
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "Dia pilih NO dan tidak membaca luahan." })
     });
 
     endSession();
 }
 
 function endSession() {
-    document.getElementById("content").innerHTML = 
+    document.getElementById("content").innerHTML =
     `<p class="text-lg text-neutral-400">Luahan ini berakhir di sini.</p>`;
+}
+
+function darkenBackground() {
+    const shades = ["#171717", "#111111", "#0d0d0d", "#080808"];
+    document.body.style.backgroundColor = shades[currentIndex] || "#050505";
 }
 </script>
 
